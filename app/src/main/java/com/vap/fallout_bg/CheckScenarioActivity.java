@@ -11,21 +11,20 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class CheckScenarioActivity extends ListActivity {
 
     private Cursor c = null;
-    private Scenario[] scenarios;
-    private String[] scenarios_str;
-    private Integer i = 0;
+    HashMap<Integer, String> Scenarios = new HashMap<>();
     private static final String TAG = "myLogs";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_scenario);
-
-        String[] scenarios_str;
 
         DBHelper myDbHelper = new DBHelper(CheckScenarioActivity.this);
         try {
@@ -45,39 +44,22 @@ public class CheckScenarioActivity extends ListActivity {
         Log.d(TAG, "Читаем таблицу сценариев");
         c = myDbHelper.query("SCENARIO", null, null, null, null, null, null);
         Log.d(TAG, "Создаем списоки");
-        scenarios = new Scenario[c.getCount()];
-        Log.d(TAG, "Создали объект список сценариев. Количеством " + c.getCount());
 
         if (c.moveToFirst()) {
             do {
-                scenarios[i] = new Scenario( Integer.parseInt( c.getString(0)),c.getString(1));
-                Log.d(TAG, "Чтение сценария" + scenarios[i].getName() );
-                i++;
+                 Scenarios.put(Integer.parseInt( c.getString(0)),c.getString(1));
+               Log.d(TAG, "Чтение сценария " + Scenarios.get(Integer.parseInt( c.getString(0))) );
             } while (c.moveToNext());
         }
 
-        Toast.makeText(CheckScenarioActivity.this, "Сценариев - " +scenarios.length, Toast.LENGTH_SHORT).show();
-        scenarios_str = new String[scenarios.length];
-        Log.d(TAG, "инициация scenarios_str");
-
-        for(int i = 0; i < scenarios.length; i++)
-        {
-            Log.d(TAG, "i = " + i );
-            Log.d(TAG,  " Scenario " + scenarios[i].getName());
-            scenarios_str[i] = scenarios[i].getName();
-        }
-        Log.d(TAG, "scenarios_str заполнен");
-//        scenarios_str = MainActivity.getScenarios_str();
-
-        // находим список
-      //   ListView lvMain = (ListView) findViewById(R.id.list);
-
+        Log.d(TAG, "сценария " + Scenarios.values() );
         // создаем адаптер
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, scenarios_str);
 
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, (List<String>) Scenarios.values().parallelStream().collect(Collectors.<String>toList()));
+
+        Log.d(TAG, "Создали адатер "  );
         // присваиваем адаптер списку
-      //  lvMain.setAdapter(adapter);
          setListAdapter(adapter);
     }
     @Override
