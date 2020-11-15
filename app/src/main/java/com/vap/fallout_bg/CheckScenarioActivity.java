@@ -14,11 +14,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
-
 public class CheckScenarioActivity extends ListActivity {
 
     private Cursor c = null;
     HashMap<Integer, String> Scenarios = new HashMap<>();
+    HashMap<String, Integer> Scenarios_b = new HashMap<>();
     private static final String TAG = "myLogs";
 
     @Override
@@ -48,6 +48,7 @@ public class CheckScenarioActivity extends ListActivity {
         if (c.moveToFirst()) {
             do {
                  Scenarios.put(Integer.parseInt( c.getString(0)),c.getString(1));
+                Scenarios_b.put(c.getString(1),Integer.parseInt(c.getString(0)));
                Log.d(TAG, "Чтение сценария " + Scenarios.get(Integer.parseInt( c.getString(0))) );
             } while (c.moveToNext());
         }
@@ -65,6 +66,6 @@ public class CheckScenarioActivity extends ListActivity {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         String item = (String) getListAdapter().getItem(position);
-        Toast.makeText(this, item + " selected", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, item + " selected id = " + Scenarios_b.get(item) , Toast.LENGTH_LONG).show();
     }
 }
